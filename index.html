@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GATE CSE Question Practice Arena</title>
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- KaTeX for rapid mathematical formula rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation / Header -->
+  <header>
+    <div class="brand">
+      <h1>GATE CSE Arena</h1>
+      <span class="badge">Official PYQs (1987–2023)</span>
+    </div>
+
+    <!-- Live Performance Stats -->
+    <div class="header-stats">
+      <div class="stat-pill" title="Total Questions matching current filters">
+        <span>Available:</span>
+        <span class="stat-val" id="statTotal">0</span>
+      </div>
+      <div class="stat-pill" title="Questions attempted this session">
+        <span>Attempted:</span>
+        <span class="stat-val" id="statAttempted">0</span>
+      </div>
+      <div class="stat-pill" title="Correct answers">
+        <span>Correct:</span>
+        <span class="stat-val" style="color: #34d399;" id="statCorrect">0</span>
+      </div>
+      <div class="stat-pill" title="Accuracy percentage">
+        <span>Accuracy:</span>
+        <span class="stat-val" style="color: #fbbf24;" id="statAccuracy">0%</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="container">
+    
+    <!-- Sidebar Controls -->
+    <aside class="sidebar">
+      <!-- Subject Filter -->
+      <div class="filter-group">
+        <label for="subjectFilter">Subject</label>
+        <select id="subjectFilter" class="select-input">
+          <option value="ALL">All Subjects</option>
+        </select>
+      </div>
+
+      <!-- Year Filter -->
+      <div class="filter-group">
+        <label for="yearFilter">Exam Year</label>
+        <select id="yearFilter" class="select-input">
+          <option value="ALL">All Years (1987–2023)</option>
+        </select>
+      </div>
+
+      <!-- Quick Filter -->
+      <div class="filter-group">
+        <label for="quickFilter">Filter By</label>
+        <select id="quickFilter" class="select-input">
+          <option value="ALL">All Questions</option>
+          <option value="UNATTEMPTED">Unattempted Only</option>
+          <option value="BOOKMARKED">Bookmarked (★)</option>
+          <option value="INCORRECT">Incorrect Attempts</option>
+        </select>
+      </div>
+
+      <!-- Search Box -->
+      <div class="filter-group">
+        <label for="searchInput">Search Topic / Keyword</label>
+        <input type="text" id="searchInput" class="text-input" placeholder="e.g. Binary Search, Paging, SQL...">
+      </div>
+
+      <!-- Instructions / Shortcuts -->
+      <div class="shortcuts-bar">
+        <p><strong>Shortcuts:</strong></p>
+        <p><kbd>1</kbd>-<kbd>4</kbd> or <kbd>A</kbd>-<kbd>D</kbd> : Select Option</p>
+        <p><kbd>→</kbd> / <kbd>N</kbd> : Next Question</p>
+        <p><kbd>←</kbd> / <kbd>P</kbd> : Previous Question</p>
+        <p><kbd>B</kbd> : Bookmark Question</p>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="question-area" id="questionArea">
+
+      <!-- Question Card -->
+      <div class="card" id="questionCard">
+        <div class="card-header">
+          <div class="q-meta">
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span class="q-subject-badge" id="qSubject">Subject</span>
+              <span class="tag-badge" id="qYear" style="color: #60a5fa; border-color: #3b82f6;">Year</span>
+            </div>
+            <h2 class="q-title" id="qTitle">Question Title</h2>
+          </div>
+          <button class="bookmark-btn" id="bookmarkBtn" title="Bookmark for revision">☆ Bookmark</button>
+        </div>
+
+        <!-- Question Statement Body -->
+        <div class="q-content" id="questionContent">
+          Loading question statement...
+        </div>
+
+        <!-- Multiple Choice Options -->
+        <div class="options-grid" id="optionsContainer">
+          <!-- Dynamically inserted options -->
+        </div>
+
+        <!-- Feedback & Explanations -->
+        <div class="feedback-banner" id="feedbackBanner">
+          <div id="bannerText">Feedback</div>
+          <a href="#" target="_blank" class="go-discuss-btn" id="discussBtn">
+            View Discussion & Solutions on GATE Overflow ↗
+          </a>
+        </div>
+
+        <!-- Tags -->
+        <div class="q-tags" id="qTags"></div>
+
+        <!-- Footer / Navigation -->
+        <div class="card-footer">
+          <div class="btn-group">
+            <button class="btn" id="prevBtn">← Previous</button>
+            <button class="btn btn-primary" id="nextBtn">Next →</button>
+            <button class="btn" id="randomBtn" title="Pick a random question">🎲 Random</button>
+          </div>
+
+          <div class="jump-box">
+            <span id="qIndexDisplay">1 of 100</span>
+            <span>Jump to:</span>
+            <input type="number" id="jumpInput" min="1" value="1" class="text-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="card" id="emptyState" style="display: none; text-align: center; padding: 3rem;">
+        <h3>No questions match the selected filters.</h3>
+        <p style="color: #94a3b8; margin-top: 0.5rem;">Try resetting your search query or selecting a different subject or year.</p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Load Questions Data and App Script -->
+  <script src="data/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
