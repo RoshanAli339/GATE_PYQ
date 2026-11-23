@@ -32,6 +32,42 @@ function saveState() {
   }
 }
 
+// Sanitize math blocks so neither <br> nor HTML entities break the math parser
+function sanitizeMathHtml(html) {
+  if (!html) return '';
+  // Clean \[ ... \]
+  html = html.replace(/\\\[([\s\S]*?)\\\]/g, (match, inner) => {
+    let clean = inner
+      .replace(/<\/?(?:br|p)[^>]*>/gi, '\n')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+    return '\\[' + clean + '\\]';
+  });
+
+  // Clean $$ ... $$
+  html = html.replace(/\$\$([\s\S]*?)\$\$/g, (match, inner) => {
+    let clean = inner
+      .replace(/<\/?(?:br|p)[^>]*>/gi, '\n')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+    return '$$' + clean + '$$';
+  });
+
+  // Clean \( ... \)
+  html = html.replace(/\\\(([\s\S]*?)\\\)/g, (match, inner) => {
+    let clean = inner
+      .replace(/<\/?(?:br|p)[^>]*>/gi, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+    return '\\(' + clean + '\\)';
+  });
+
+  return html;
+}
+
 // Initialize Application
 async function init() {
   loadSavedState();
@@ -91,7 +127,6 @@ function setupYearFilter() {
     yearCounts[yr] = (yearCounts[yr] || 0) + 1;
   });
 
-  // Sort descending by year
   const years = Object.keys(yearCounts).sort((a, b) => b.localeCompare(a));
 
   select.innerHTML = `<option value="ALL">All Years (${allQuestions.length})</option>`;
@@ -168,9 +203,9 @@ function renderCurrentQuestion() {
     bookmarkBtn.innerHTML = `☆ Bookmark`;
   }
 
-  // Question Content
+  // Question Content (Sanitized math HTML)
   const contentEl = document.getElementById('questionContent');
-  contentEl.innerHTML = q.question_html || '<p>No question description provided.</p>';
+  contentEl.innerHTML = sanitizeMathHtml(q.question_html || '<p>No question description provided.</p>');
 
   // Tags
   const tagsContainer = document.getElementById('qTags');
@@ -201,7 +236,7 @@ function renderCurrentQuestion() {
     revealAnswer(q, userAnswers[q.id].chosen);
   }
 
-  // Render Math formulas using KaTeX
+  // Render Math formulas
   renderMath();
 }
 
@@ -224,7 +259,7 @@ function renderOptions(q) {
     btn.dataset.key = opt.key;
     btn.innerHTML = `
       <span class="option-key">${opt.key}</span>
-      <span class="option-text">${opt.html || opt.text}</span>
+      <span class="option-text">${sanitizeMathHtml(opt.html || opt.text)}</span>
     `;
 
     btn.onclick = () => onOptionSelected(q, opt.key);
@@ -278,9 +313,19 @@ function revealAnswer(q, chosenKey) {
 }
 
 function renderMath() {
-  if (window.renderMathInElement) {
+  const card = document.getElementById('questionCard');
+  if (!card) return;
+
+  // Primary: MathJax 3 (Complete LaTeX mathematical support)
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise([card]).catch(err => {
+      console.warn('MathJax error:', err);
+    });
+  } 
+  // Secondary: KaTeX auto-render fallback
+  else if (window.renderMathInElement) {
     try {
-      window.renderMathInElement(document.getElementById('questionCard'), {
+      window.renderMathInElement(card, {
         delimiters: [
           { left: '$$', right: '$$', display: true },
           { left: '$', right: '$', display: false },
@@ -290,10 +335,15 @@ function renderMath() {
         throwOnError: false
       });
     } catch (e) {
-      console.error('KaTeX rendering error:', e);
+      console.warn('KaTeX error:', e);
     }
   }
 }
+
+// Hook MathJax startup ready event
+window.onMathJaxReady = () => {
+  renderMath();
+};
 
 function updateStats() {
   const attempted = Object.keys(userAnswers).length;

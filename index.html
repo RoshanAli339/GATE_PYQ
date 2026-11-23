@@ -6,7 +6,30 @@
   <title>GATE CSE Question Practice Arena</title>
   <link rel="stylesheet" href="css/style.css">
   
-  <!-- KaTeX for rapid mathematical formula rendering -->
+  <!-- MathJax 3 configuration for authentic mathematical typesetting -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          if (window.onMathJaxReady) {
+            window.onMathJaxReady();
+          }
+        }
+      }
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- KaTeX as fast secondary / fallback renderer -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
@@ -76,7 +99,7 @@
       <!-- Search Box -->
       <div class="filter-group">
         <label for="searchInput">Search Topic / Keyword</label>
-        <input type="text" id="searchInput" class="text-input" placeholder="e.g. Binary Search, Paging, SQL...">
+        <input type="text" id="searchInput" class="text-input" placeholder="e.g. Binary Search, Paging, Matrix...">
       </div>
 
       <!-- Instructions / Shortcuts -->
